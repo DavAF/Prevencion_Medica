@@ -42,19 +42,22 @@ def show_form():
         submitted = st.form_submit_button("Consultar pasos")
 
         if submitted:
-            if not nombre.strip():
-                st.error("Por favor, introduce tu nombre.")
-            else:
-                resumen = generar_resumen(nombre, comunidad, edad, renovar_tipo)
-                st.success("✅ Consulta generada correctamente.")
-                st.text_area("Resumen personalizado:", resumen, height=300)
+    if not nombre.strip():
+        st.error("Por favor, introduce tu nombre.")
+    else:
+        resumen = generar_resumen(nombre, comunidad, edad, renovar_tipo)
+        st.success("✅ Consulta generada correctamente.")
+        st.text_area("Resumen personalizado:", resumen, height=300)
 
-                # Descargar como archivo
-                st.download_button(
-                    label="📄 Descargar resumen como TXT",
-                    data=resumen,
-                    file_name=f"renovacion_{nombre.lower().replace(' ', '_')}.txt",
-                    mime="text/plain"
-                )
+        # Convertir a bytes para el botón de descarga
+        resumen_bytes = resumen.encode("utf-8")
+
+        st.download_button(
+            label="📄 Descargar resumen como TXT",
+            data=resumen_bytes,
+            file_name=f"renovacion_{nombre.lower().replace(' ', '_')}.txt",
+            mime="text/plain"
+        )
+
 
 show_form()
