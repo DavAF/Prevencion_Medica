@@ -6,7 +6,7 @@ st.title("🤖 Chatbot: Certificado Médico para Carnet de Conducir")
 
 # Simulación de datos por comunidad
 centros = {
-    "Madrid": ["Centro Médico Goya", "Clínica Reconduce", "Centro Sanitas Cuatro Caminos"],
+    "Madrid": ["Centro Médico Prevención Médica", "Clínica Reconduce", "Centro Sanitas Cuatro Caminos"],
     "Andalucía": ["Clínica Andalucía Conduce", "Centro Médico Sur", "Médicos Aljarafe"],
     "Cataluña": ["Médico Carnet BCN", "Clínica Diagonal Drive", "Centro Médico Gracia"]
 }
