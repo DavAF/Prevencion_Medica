@@ -1,13 +1,7 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[2]:
-
 
 import streamlit as st
 
 st.set_page_config(page_title="Chatbot Renovación Carnet", page_icon="🚗")
-
 st.title("🤖 Chatbot: Certificado Médico para Carnet de Conducir")
 
 # Simulación de datos por comunidad
@@ -17,56 +11,50 @@ centros = {
     "Cataluña": ["Médico Carnet BCN", "Clínica Diagonal Drive", "Centro Médico Gracia"]
 }
 
-# Estado de conversación
-if "step" not in st.session_state:
-    st.session_state.step = 1
+def generar_resumen(nombre, comunidad, edad, renovar_tipo):
+    texto = f"""
+Hola {nombre},
 
-def reiniciar_chat():
-    st.session_state.step = 1
-    st.session_state.comunidad = ""
-    st.session_state.nombre = ""
+Estos son los pasos para renovar tu carnet de tipo {renovar_tipo} en {comunidad}:
 
-# Paso 1: nombre del usuario
-if st.session_state.step == 1:
-    st.write("👋 ¡Hola! Soy tu asistente para renovar el carnet de conducir.")
-    st.session_state.nombre = st.text_input("¿Cómo te llamas?")
-    if st.session_state.nombre:
-        st.session_state.step = 2
-        st.experimental_rerun()
+1. Solicita un certificado médico en un centro autorizado.
+2. Lleva tu DNI/NIE y tu carnet de conducir actual.
+3. Te harán una revisión médica (vista, coordinación, presión arterial).
+4. El centro enviará tu certificado a la DGT o te lo entregará.
+5. Precio estimado: entre 30 € y 60 €.
 
-# Paso 2: comunidad autónoma
-elif st.session_state.step == 2:
-    st.write(f"Encantado, {st.session_state.nombre}.")
-    st.session_state.comunidad = st.selectbox("¿En qué comunidad autónoma estás?", list(centros.keys()))
-    if st.session_state.comunidad:
-        st.session_state.step = 3
-        st.experimental_rerun()
+Centros recomendados:
+"""
+    for c in centros[comunidad]:
+        texto += f"- {c}\n"
 
-# Paso 3: Mostrar información relevante
-elif st.session_state.step == 3:
-    st.write(f"🔍 En {st.session_state.comunidad}, estos son los pasos para renovar tu carnet:")
+    if edad >= 65:
+        texto += "\nNota: Como tienes más de 65 años, la validez del carnet puede ser menor.\n"
 
-    st.markdown("""
-    1. **Solicita un certificado médico** en un centro autorizado.
-    2. Lleva tu DNI/NIE y el carnet de conducir.
-    3. Hazte una revisión (vista, reflejos, presión).
-    4. Te entregarán el certificado directamente o lo enviarán a la DGT.
-    5. **Precio estimado**: entre 30 € y 60 €.
-    """)
+    return texto
 
-    st.write("🏥 Centros médicos recomendados:")
-    for c in centros[st.session_state.comunidad]:
-        st.write(f"- {c}")
+def show_form():
+    with st.form("chatbot_form"):
+        nombre = st.text_input("¿Cómo te llamas?", max_chars=50)
+        comunidad = st.selectbox("¿En qué comunidad autónoma estás?", list(centros.keys()))
+        edad = st.slider("¿Cuál es tu edad?", 16, 100, 30)
+        renovar_tipo = st.selectbox("¿Qué tipo de carnet quieres renovar?", ["B (coche)", "A (moto)", "C (camión)", "D (autobús)"])
+        submitted = st.form_submit_button("Consultar pasos")
 
-    if st.button("Finalizar"):
-        st.session_state.step = 4
-        st.experimental_rerun()
+        if submitted:
+            if not nombre.strip():
+                st.error("Por favor, introduce tu nombre.")
+            else:
+                resumen = generar_resumen(nombre, comunidad, edad, renovar_tipo)
+                st.success("✅ Consulta generada correctamente.")
+                st.text_area("Resumen personalizado:", resumen, height=300)
 
-# Paso 4: Final
-elif st.session_state.step == 4:
-    st.success("✅ ¡Listo! Ya sabes cómo renovar tu carnet.")
-    st.markdown("¿Quieres volver a empezar?")
-    if st.button("🔄 Reiniciar"):
-        reiniciar_chat()
+                # Descargar como archivo
+                st.download_button(
+                    label="📄 Descargar resumen como TXT",
+                    data=resumen,
+                    file_name=f"renovacion_{nombre.lower().replace(' ', '_')}.txt",
+                    mime="text/plain"
+                )
 
-
+show_form()
