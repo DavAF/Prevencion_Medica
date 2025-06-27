@@ -6,7 +6,7 @@ st.title("🤖 Chatbot: Certificado Médico para Carnet de Conducir")
 
 # Simulación de datos por comunidad
 centros = {
-    "Madrid": ["Centro Médico Prevención Médica", "Clínica Reconduce", "Centro Sanitas Cuatro Caminos"],
+    "Madrid": ["Centro Médico Goya", "Clínica Reconduce", "Centro Sanitas Cuatro Caminos"],
     "Andalucía": ["Clínica Andalucía Conduce", "Centro Médico Sur", "Médicos Aljarafe"],
     "Cataluña": ["Médico Carnet BCN", "Clínica Diagonal Drive", "Centro Médico Gracia"]
 }
@@ -23,13 +23,13 @@ Estos son los pasos para renovar tu carnet de tipo {renovar_tipo} en {comunidad}
 4. El centro enviará tu certificado a la DGT o te lo entregará.
 5. Precio estimado: entre 30 € y 60 €.
 
-Centros recomendados:
+🏥 Centros recomendados en {comunidad}:
 """
     for c in centros[comunidad]:
         texto += f"- {c}\n"
 
     if edad >= 65:
-        texto += "\nNota: Como tienes más de 65 años, la validez del carnet puede ser menor.\n"
+        texto += "\n📢 Nota: Como tienes más de 65 años, la validez del carnet puede ser menor.\n"
 
     return texto
 
@@ -41,23 +41,22 @@ def show_form():
         renovar_tipo = st.selectbox("¿Qué tipo de carnet quieres renovar?", ["B (coche)", "A (moto)", "C (camión)", "D (autobús)"])
         submitted = st.form_submit_button("Consultar pasos")
 
-        if submitted:
-    if not nombre.strip():
-        st.error("Por favor, introduce tu nombre.")
-    else:
-        resumen = generar_resumen(nombre, comunidad, edad, renovar_tipo)
-        st.success("✅ Consulta generada correctamente.")
-        st.text_area("Resumen personalizado:", resumen, height=300)
+    if submitted:
+        if not nombre.strip():
+            st.error("Por favor, introduce tu nombre.")
+        else:
+            resumen = generar_resumen(nombre, comunidad, edad, renovar_tipo)
+            st.success("✅ Consulta generada correctamente.")
+            st.text_area("Resumen personalizado:", resumen, height=300)
 
-        # Convertir a bytes para el botón de descarga
-        resumen_bytes = resumen.encode("utf-8")
+            # Convertir a bytes para el botón de descarga
+            resumen_bytes = resumen.encode("utf-8")
 
-        st.download_button(
-            label="📄 Descargar resumen como TXT",
-            data=resumen_bytes,
-            file_name=f"renovacion_{nombre.lower().replace(' ', '_')}.txt",
-            mime="text/plain"
-        )
-
+            st.download_button(
+                label="📄 Descargar resumen como TXT",
+                data=resumen_bytes,
+                file_name=f"renovacion_{nombre.lower().replace(' ', '_')}.txt",
+                mime="text/plain"
+            )
 
 show_form()
